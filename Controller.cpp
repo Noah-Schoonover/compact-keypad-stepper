@@ -54,34 +54,12 @@
 // This class is the main Controller (as in MVC structure).
 //
 
-
-
-const byte ROWS = 4; //four rows
-const byte COLS = 4; //four columns
-
-char keys[ROWS][COLS] = {
-  {'1','2','3','A'},
-  {'4','5','6','B'},
-  {'7','8','9','C'},
-  {'*','0','#','D'}
-};
-
-byte rowPins[ROWS] = {KEY_ROW_1, KEY_ROW_2, KEY_ROW_3, KEY_ROW_4}; //connect to the row pinouts of the keypad
-byte colPins[COLS] = {KEY_COL_1, KEY_COL_2, KEY_COL_3, KEY_COL_4}; //connect to the column pinouts of the keypad
-
-//Create an object of keypad
-Keypad keypad( makeKeymap(keys), rowPins, colPins, ROWS, COLS );
-
-
-
 //-----------------------------------------------------------------------------------------
 // Controller::Controller (constructor)
 //
 
 Controller::Controller()
 {
-
-    // typically empty
 
 }// end of Controller::Controller (constructor)
 //-----------------------------------------------------------------------------------------
@@ -102,7 +80,7 @@ void Controller::init(){
 	debug();
 
     setupDisplay();
-    //setupKeypad();
+    setupKeypad();
 
 	Serial.println("-- Continuing to control loop");
 
@@ -120,12 +98,17 @@ void Controller::process(){
 
     display.refreshDisplay();
 
-    char key = keypad.getKey();// Read the key
-
-    // Print if key pressed
+    char key = keypad->getKey();
     if (key){
         Serial.print("Key Pressed : ");
         Serial.println(key);
+
+        memmove(keypadBuffer + 1, keypadBuffer, KEYPAD_BUFFER_SIZE-1);
+        keypadBuffer[0] = key;
+        const char* string = keypadBuffer;
+
+        display.setChars(string);
+
     }
 
 }// end of Controller::process
@@ -151,7 +134,8 @@ void Controller::setupDisplay(){
     updateWithDelays, leadingZeros, disableDecPoint);
 
     //sevseg.setBrightness(90);
-    display.setNumber(3141,3);
+    //display.setNumber(3141,3);
+    display.setChars("abcd");
 
 }// end of Controller::setupDisplay
 //-----------------------------------------------------------------------------------------
@@ -162,23 +146,10 @@ void Controller::setupDisplay(){
 //
 
 void Controller::setupKeypad(){
-/* debug nps
-    const byte ROWS = 4; //four rows
-    const byte COLS = 4; //four columns
 
-    char keys[ROWS][COLS] = {
-      {'1','2','3','A'},
-      {'4','5','6','B'},
-      {'7','8','9','C'},
-      {'*','0','#','D'}
-    };
+    keypad = new KeypadWrapper();
 
-    byte rowPins[ROWS] = {KEY_ROW_1, KEY_ROW_2, KEY_ROW_3, KEY_ROW_4}; //connect to the row pinouts of the keypad
-    byte colPins[COLS] = {KEY_COL_1, KEY_COL_2, KEY_COL_3, KEY_COL_4}; //connect to the column pinouts of the keypad
 
-    //Create an object of keypad
-    keypad = new Keypad( makeKeymap(keys), rowPins, colPins, ROWS, COLS );
-end debug nps */
 }// end of Controller::setupKeypad
 //-----------------------------------------------------------------------------------------
 

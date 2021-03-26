@@ -4,7 +4,7 @@
 
 #include <arduino.h>
 #include "SevSeg.h"
-#include <Keypad.h>
+#include "KeypadWrapper.h"
 
 //-----------------------------------------------------------------------------------------
 // class Controller
@@ -27,17 +27,7 @@ static const int SEG_F_10 = 8;
 static const int SEG_G_5 = 3;
 static const int SEG_DP_3 = 13;
 
-// the following static constants set the Arduino pin numbers corresponding to
-//   each keypad pin
-static const int KEY_ROW_1 = 14;
-static const int KEY_ROW_2 = 15;
-static const int KEY_ROW_3 = 16;
-static const int KEY_ROW_4 = 17;
-static const int KEY_COL_1 = 18;
-static const int KEY_COL_2 = 19;
-static const int KEY_COL_3 = 20;
-static const int KEY_COL_4 = 21;
-
+static const int KEYPAD_BUFFER_SIZE = 5;
 
 class Controller{
 
@@ -60,10 +50,12 @@ class Controller{
 
 	protected:
 
+        KeypadWrapper *keypad;
+        char keypadBuffer[KEYPAD_BUFFER_SIZE] = { 0 }; // initialized to zero
+        int keypadBufferPos = 0;
+
         SevSeg display;
         int time;
-
-        //Keypad *keypad;
 
 
 };// end of class Controller
