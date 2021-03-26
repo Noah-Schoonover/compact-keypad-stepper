@@ -29,6 +29,9 @@
 //            The file will be added to your local libraries for use. Done.
 //
 //
+//      AccelStepper
+//          by Mike McCauley (version 1.61.0)
+//
 //----------------------------------------------------
 //
 // Authors:
@@ -82,6 +85,9 @@ void Controller::init(){
     setupDisplay();
     setupKeypad();
 
+    stepper.setMaxSpeed(1000);
+    stepper.setSpeed(0);
+
 	Serial.println("-- Continuing to control loop");
 
 }// end of Controller::init
@@ -109,7 +115,44 @@ void Controller::process(){
 
         display.setChars(string);
 
+        // change motor speed and direction based on key press
+        switch (key) {
+        case '0':
+            stepper.setSpeed(0);
+            break;
+        case '1':
+            stepper.setSpeed(10);
+            break;
+        case '2':
+            stepper.setSpeed(20);
+            break;
+        case '3':
+            stepper.setSpeed(30);
+            break;
+        case '4':
+            stepper.setSpeed(40);
+            break;
+        case '5':
+            stepper.setSpeed(50);
+            break;
+        case '6':
+            stepper.setSpeed(60);
+            break;
+        case '7':
+            stepper.setSpeed(70);
+            break;
+        case '9':
+            stepper.setSpeed(90);
+            break;
+        case '*':
+            // change direction
+            stepper.setSpeed(stepper.speed() * -1);
+            break;
+        }
+
     }
+
+    stepper.runSpeed();
 
 }// end of Controller::process
 //-----------------------------------------------------------------------------------------

@@ -5,6 +5,7 @@
 #include <arduino.h>
 #include "SevSeg.h"
 #include "KeypadWrapper.h"
+#include <AccelStepper.h>
 
 //-----------------------------------------------------------------------------------------
 // class Controller
@@ -28,6 +29,12 @@ static const int SEG_G_5 = 3;
 static const int SEG_DP_3 = 13;
 
 static const int KEYPAD_BUFFER_SIZE = 5;
+
+static const int STEPS_PER_REV = 200;
+static const int STEPPER_DIR_PIN = 1;
+static const int STEPPER_STEP_PIN = 0;
+static const int STEPPER_INTERFACE_TYPE = 1; // set to 1 when using a driver
+
 
 class Controller{
 
@@ -55,7 +62,8 @@ class Controller{
         int keypadBufferPos = 0;
 
         SevSeg display;
-        int time;
+
+        AccelStepper stepper = AccelStepper(STEPPER_INTERFACE_TYPE, STEPPER_STEP_PIN, STEPPER_DIR_PIN);
 
 
 };// end of class Controller
