@@ -109,8 +109,8 @@ void Controller::process(){
         Serial.print("Key Pressed : ");
         Serial.println(key);
 
-        memmove(keypadBuffer + 1, keypadBuffer, KEYPAD_BUFFER_SIZE-1);
-        keypadBuffer[0] = key;
+        memmove(keypadBuffer, keypadBuffer + 1, KEYPAD_BUFFER_SIZE-2);
+        keypadBuffer[4] = key;
         const char* string = keypadBuffer;
 
         display.setChars(string);
