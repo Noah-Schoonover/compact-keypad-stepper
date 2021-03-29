@@ -87,6 +87,7 @@ void Controller::init(){
 
     stepper.setMaxSpeed(1000);
     stepper.setSpeed(0);
+    Serial.print("Stepper speed: "); Serial.println(stepper.speed());
 
 	Serial.println("-- Continuing to control loop");
 
@@ -103,56 +104,71 @@ void Controller::init(){
 void Controller::process(){
 
     display.refreshDisplay();
+    stepper.runSpeed();
 
     char key = keypad->getKey();
     if (key){
         Serial.print("Key Pressed : ");
         Serial.println(key);
 
-        memmove(keypadBuffer, keypadBuffer + 1, KEYPAD_BUFFER_SIZE-2);
-        keypadBuffer[4] = key;
+        keypadBuffer[0] = keypadBuffer[1];
+        keypadBuffer[1] = keypadBuffer[2];
+        keypadBuffer[2] = keypadBuffer[3];
+        keypadBuffer[3] = key;
+        keypadBuffer[4] = 0;
         const char* string = keypadBuffer;
-
         display.setChars(string);
 
         // change motor speed and direction based on key press
         switch (key) {
         case '0':
             stepper.setSpeed(0);
+            Serial.print("Stepper speed: "); Serial.println(stepper.speed());
             break;
         case '1':
             stepper.setSpeed(10);
+            Serial.print("Stepper speed: "); Serial.println(stepper.speed());
             break;
         case '2':
             stepper.setSpeed(20);
+            Serial.print("Stepper speed: "); Serial.println(stepper.speed());
             break;
         case '3':
             stepper.setSpeed(30);
+            Serial.print("Stepper speed: "); Serial.println(stepper.speed());
             break;
         case '4':
             stepper.setSpeed(40);
+            Serial.print("Stepper speed: "); Serial.println(stepper.speed());
             break;
         case '5':
             stepper.setSpeed(50);
+            Serial.print("Stepper speed: "); Serial.println(stepper.speed());
             break;
         case '6':
             stepper.setSpeed(60);
+            Serial.print("Stepper speed: "); Serial.println(stepper.speed());
             break;
         case '7':
             stepper.setSpeed(70);
+            Serial.print("Stepper speed: "); Serial.println(stepper.speed());
             break;
+       case '8':
+           stepper.setSpeed(80);
+           Serial.print("Stepper speed: "); Serial.println(stepper.speed());
+           break;
         case '9':
             stepper.setSpeed(90);
+            Serial.print("Stepper speed: "); Serial.println(stepper.speed());
             break;
         case '*':
             // change direction
             stepper.setSpeed(stepper.speed() * -1);
+            Serial.print("Stepper speed: "); Serial.println(stepper.speed());
             break;
         }
 
     }
-
-    stepper.runSpeed();
 
 }// end of Controller::process
 //-----------------------------------------------------------------------------------------
@@ -178,7 +194,15 @@ void Controller::setupDisplay(){
 
     //sevseg.setBrightness(90);
     //display.setNumber(3141,3);
-    display.setChars("abcd");
+    //display.setChars("abcd");
+
+    keypadBuffer[0] = 'a';
+    keypadBuffer[1] = 'b';
+    keypadBuffer[2] = 'c';
+    keypadBuffer[3] = 'd';
+    keypadBuffer[4] = 0;
+    const char* string = keypadBuffer;
+    display.setChars(string);
 
 }// end of Controller::setupDisplay
 //-----------------------------------------------------------------------------------------
