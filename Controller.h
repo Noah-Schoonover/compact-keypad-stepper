@@ -6,6 +6,7 @@
 #include "SevSeg.h"
 #include "KeypadWrapper.h"
 #include <AccelStepper.h>
+#include <Servo.h>
 
 //-----------------------------------------------------------------------------------------
 // class Controller
@@ -33,8 +34,12 @@ static const int KEYPAD_BUFFER_SIZE = 5;
 static const int STEPS_PER_REV = 200;
 static const int STEPPER_STEP_PIN = 22;
 static const int STEPPER_DIR_PIN = 23;
+static const int STEPPER_ENABLE_PIN = 26;
 static const int STEPPER_INTERFACE_TYPE = 1; // set to 1 when using a driver
 
+static const int SERVO_PIN = 24;
+
+static const int LIMIT_SWITCH_PIN = 25;
 
 class Controller{
 
@@ -42,29 +47,37 @@ class Controller{
 
 		Controller();
 
-        void setupIO();
-		void initSerialPort();
-
 		void init();
 		void process();
-
-		void debug();
-
-		void setupKeypad();
-        void setupDisplay();
 
         ~Controller();
 
 	protected:
 
+
+
+    private:
+
+        void setupIO();
+        void initSerialPort();
+        void debug();
+
+        void handleKeyPress(char key);
+
         KeypadWrapper *keypad;
         char keypadBuffer[KEYPAD_BUFFER_SIZE] = { 0 }; // initialized to zero
-        int keypadBufferPos = 0;
+        void setupKeypad();
 
         SevSeg display;
+        void setupDisplay();
 
+        // not enabled upon instantiation
         AccelStepper stepper = AccelStepper(STEPPER_INTERFACE_TYPE, STEPPER_STEP_PIN, STEPPER_DIR_PIN);
+        void setupStepper();
 
+        Servo servo;
+        int servoPosition;
+        void setupServo();
 
 };// end of class Controller
 //-----------------------------------------------------------------------------------------

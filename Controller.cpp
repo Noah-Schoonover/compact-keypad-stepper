@@ -84,6 +84,8 @@ void Controller::init(){
 
     setupDisplay();
     setupKeypad();
+    setupServo();
+    setupStepper();
 
     stepper.setMaxSpeed(1000);
     stepper.setSpeed(0);
@@ -104,73 +106,121 @@ void Controller::init(){
 void Controller::process(){
 
     display.refreshDisplay();
-    stepper.runSpeed();
+
+    if (digitalRead(LIMIT_SWITCH_PIN) == HIGH) {    // if limit switch is not pressed
+        stepper.runSpeed();
+    }
 
     char key = keypad->getKey();
-    if (key){
-        Serial.print("Key Pressed : ");
-        Serial.println(key);
+    if (key){ handleKeyPress(key); }
 
-        keypadBuffer[0] = keypadBuffer[1];
-        keypadBuffer[1] = keypadBuffer[2];
-        keypadBuffer[2] = keypadBuffer[3];
-        keypadBuffer[3] = key;
-        keypadBuffer[4] = 0;
-        const char* string = keypadBuffer;
-        display.setChars(string);
+}// end of Controller::process
+//-----------------------------------------------------------------------------------------
 
-        // change motor speed and direction based on key press
-        switch (key) {
+//-----------------------------------------------------------------------------------------
+// Controller::handleKeyPress
+//
+//
+
+void Controller::handleKeyPress(char key){
+
+    Serial.print("Key Pressed : "); Serial.println(key);
+
+    keypadBuffer[0] = keypadBuffer[1];
+    keypadBuffer[1] = keypadBuffer[2];
+    keypadBuffer[2] = keypadBuffer[3];
+    keypadBuffer[3] = key;
+    keypadBuffer[4] = 0;
+    const char* string = keypadBuffer;
+    display.setChars(string);
+
+    // change motor speed and direction based on key press
+    switch (key) {
         case '0':
             stepper.setSpeed(0);
+            digitalWrite(STEPPER_ENABLE_PIN, HIGH);
+            servo.write(servoPosition = 0);
+            servo.detach();
             Serial.print("Stepper speed: "); Serial.println(stepper.speed());
             break;
         case '1':
+            servo.attach(SERVO_PIN);
+            servo.write(servoPosition = 20);
+            digitalWrite(STEPPER_ENABLE_PIN, LOW);
             stepper.setSpeed(10);
             Serial.print("Stepper speed: "); Serial.println(stepper.speed());
             break;
         case '2':
+            servo.attach(SERVO_PIN);
+            servo.write(servoPosition = 40);
+            digitalWrite(STEPPER_ENABLE_PIN, LOW);
             stepper.setSpeed(20);
             Serial.print("Stepper speed: "); Serial.println(stepper.speed());
             break;
         case '3':
+            servo.attach(SERVO_PIN);
+            servo.write(servoPosition = 60);
+            digitalWrite(STEPPER_ENABLE_PIN, LOW);
             stepper.setSpeed(30);
             Serial.print("Stepper speed: "); Serial.println(stepper.speed());
             break;
         case '4':
+            servo.attach(SERVO_PIN);
+            servo.write(servoPosition = 80);
+            digitalWrite(STEPPER_ENABLE_PIN, LOW);
             stepper.setSpeed(40);
             Serial.print("Stepper speed: "); Serial.println(stepper.speed());
             break;
         case '5':
+            servo.attach(SERVO_PIN);
+            servo.write(servoPosition = 100);
+            digitalWrite(STEPPER_ENABLE_PIN, LOW);
             stepper.setSpeed(50);
             Serial.print("Stepper speed: "); Serial.println(stepper.speed());
             break;
         case '6':
+            servo.attach(SERVO_PIN);
+            servo.write(servoPosition = 120);
+            digitalWrite(STEPPER_ENABLE_PIN, LOW);
             stepper.setSpeed(60);
             Serial.print("Stepper speed: "); Serial.println(stepper.speed());
             break;
         case '7':
+            servo.attach(SERVO_PIN);
+            servo.write(servoPosition = 140);
+            digitalWrite(STEPPER_ENABLE_PIN, LOW);
             stepper.setSpeed(70);
             Serial.print("Stepper speed: "); Serial.println(stepper.speed());
             break;
-       case '8':
-           stepper.setSpeed(80);
-           Serial.print("Stepper speed: "); Serial.println(stepper.speed());
-           break;
+        case '8':
+            servo.attach(SERVO_PIN);
+            servo.write(servoPosition = 160);
+            digitalWrite(STEPPER_ENABLE_PIN, LOW);
+            stepper.setSpeed(80);
+            Serial.print("Stepper speed: "); Serial.println(stepper.speed());
+            break;
         case '9':
+            servo.attach(SERVO_PIN);
+            servo.write(servoPosition = 180);
+            digitalWrite(STEPPER_ENABLE_PIN, LOW);
             stepper.setSpeed(90);
             Serial.print("Stepper speed: "); Serial.println(stepper.speed());
             break;
         case '*':
+            servo.attach(SERVO_PIN);
+            servo.write(servoPosition -= 10);
+            Serial.print("Servo position: "); Serial.println(servoPosition);
             // change direction
             stepper.setSpeed(stepper.speed() * -1);
             Serial.print("Stepper speed: "); Serial.println(stepper.speed());
             break;
-        }
-
+        case '#':
+            servo.attach(SERVO_PIN);
+            servo.write(servoPosition += 10);
+            break;
     }
 
-}// end of Controller::process
+}// end of Controller::handleKeyPress
 //-----------------------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------------------
@@ -208,6 +258,18 @@ void Controller::setupDisplay(){
 //-----------------------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------------------
+// Controller::setupStepper
+//
+//
+
+void Controller::setupStepper(){
+
+    digitalWrite(STEPPER_ENABLE_PIN, HIGH);
+
+}// end of Controller::setupStepper
+//-----------------------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------------------
 // Controller::setupKeypad
 //
 //
@@ -216,8 +278,19 @@ void Controller::setupKeypad(){
 
     keypad = new KeypadWrapper();
 
-
 }// end of Controller::setupKeypad
+//-----------------------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------------------
+// Controller::setupServo
+//
+//
+
+void Controller::setupServo(){
+
+    servo.attach(SERVO_PIN);
+
+}// end of Controller::setupServo
 //-----------------------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------------------
@@ -229,7 +302,7 @@ void Controller::setupKeypad(){
 
 void Controller::setupIO() {
 
-    //display.setupIO();
+    pinMode(LIMIT_SWITCH_PIN, INPUT_PULLUP);
 
 }// end Controller::setupIO
 //-----------------------------------------------------------------------------------------
@@ -266,8 +339,6 @@ void Controller::initSerialPort() {
 void Controller::debug() {
 
 	Serial.println("-- Debug Section\n");
-
-
 
 }// end debug
 //-----------------------------------------------------------------------------------------
